@@ -1,4 +1,5 @@
 class ApplicationController < Sinatra::Base
+  set :default_content_type, 'application/json'
 
   get '/' do
     {message: "This is the root route try another route ex: '/all' '/one/:id' '/first'"}.to_json
@@ -12,8 +13,8 @@ class ApplicationController < Sinatra::Base
     games.to_json
   end
   get '/one/:id' do
-    games = Game.find(params[:id])
-    games.to_json
+    game = Game.find(params[:id])
+    game.to_json
   end
 
   post '/create' do
@@ -22,4 +23,17 @@ class ApplicationController < Sinatra::Base
     newGame.to_json
   end
 
+  delete "/delete/:id" do
+    game = Game.find(params[:id])
+    game.destroy
+    game.to_json
+  end
+
+  put "/update_price/:id" do
+    data = JSON.parse request.body.read
+    game = Game.find(params[:id])
+    game.price = data['price']
+    game.save
+    game.to_json
+  end
 end
